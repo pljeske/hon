@@ -27,6 +27,13 @@ class HonNumberEntityDescription(NumberEntityDescription):
 
 
 NUMBERS: dict[str, tuple[NumberEntityDescription, ...]] = {
+    "AP": (
+        HonConfigNumberEntityDescription(
+            key="startProgram.machMode",
+            name="Wind Speed",
+            icon="mdi:wind-sock"
+        ),
+    ),
     "WM": (
         HonConfigNumberEntityDescription(
             key="startProgram.delayTime",

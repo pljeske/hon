@@ -41,6 +41,44 @@ class HonSensorEntityDescription(SensorEntityDescription):
 
 
 SENSORS: dict[str, tuple[SensorEntityDescription, ...]] = {
+    "AP": (
+        HonSensorEntityDescription(
+            key="airQuality",
+            name="Air Quality",
+            icon="mdi:air-filter",
+            device_class=SensorDeviceClass.AQI
+        ),
+        HonSensorEntityDescription(
+            key="pm10ValueIndoor",
+            name="PM10 Indoor",
+            icon="mdi:air-filter",
+            device_class=SensorDeviceClass.AQI
+        ),
+        HonSensorEntityDescription(
+            key="pm2p5ValueIndoor",
+            name="PM2p5 Indoor",
+            icon="mdi:air-filter",
+            device_class=SensorDeviceClass.AQI
+        ),
+        HonSensorEntityDescription(
+            key="vocValueIndoor",
+            name="Volatile Organic Compounds Indoor",
+            icon="mdi:air-filter",
+            device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS
+        ),
+        HonSensorEntityDescription(
+            key="windSpeed",
+            name="Wind Speed",
+            icon="mdi:windsock",
+            device_class=SensorDeviceClass.WIND_SPEED
+        ),
+        HonSensorEntityDescription(
+            key="pollenLevel",
+            name="Pollen Level",
+            icon="mdi:flower",
+            device_class=SensorDeviceClass.AQI
+        )
+    ),
     "WM": (
         HonSensorEntityDescription(
             key="prPhase",

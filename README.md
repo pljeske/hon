@@ -171,6 +171,21 @@ For every device exists a hidden button which can be used to log all infos of yo
 | Program | `play` | `sensor` | `programName` |
 | Selected Temperature | `thermometer` | `sensor` | `tempSel` |
 
+### Air purifier
+#### Configs
+| Name | Icon | Entity | Key |
+| --- | --- | --- | --- |
+| Wind Speed | `wind-sock` | `number` | `startProgram.machMode` |
+#### Sensors
+| Name | Icon | Entity | Key |
+| --- | --- | --- | --- |
+| Air Quality | `air-filter` | `sensor` | `airQuality` |
+| PM10 Indoor | `air-filter` | `sensor` | `pm10ValueIndoor` |
+| PM2p5 Indoor | `air-filter` | `sensor` | `pm2p5ValueIndoor` |
+| Pollen Level | `flower` | `sensor` | `pollenLevel` |
+| Volatile Organic Compounds Indoor | `air-filter` | `sensor` | `vocValueIndoor` |
+| Wind Speed | `windsock` | `sensor` | `windSpeed` |
+
 ### Dish washer
 #### Controls
 | Name | Icon | Entity | Key |
