@@ -9,7 +9,12 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE
+from homeassistant.const import (
+    PERCENTAGE,
+    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    CONCENTRATION_PARTS_PER_BILLION,
+    CONCENTRATION_PARTS_PER_MILLION,
+)
 from homeassistant.const import (
     REVOLUTIONS_PER_MINUTE,
     UnitOfEnergy,
@@ -24,7 +29,7 @@ from homeassistant.helpers.entity import EntityCategory
 
 from . import const
 from .const import DOMAIN
-from .hon import HonEntity, unique_entities
+from .hon import HonEntity, unique_entities, get_readable
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,12 +37,12 @@ _LOGGER = logging.getLogger(__name__)
 @dataclass
 class HonConfigSensorEntityDescription(SensorEntityDescription):
     entity_category: EntityCategory = EntityCategory.CONFIG
-    option_list: Dict[str, str] = None
+    option_list: Dict[int, str] = None
 
 
 @dataclass
 class HonSensorEntityDescription(SensorEntityDescription):
-    option_list: Dict[str, str] = None
+    option_list: Dict[int, str] = None
 
 
 SENSORS: dict[str, tuple[SensorEntityDescription, ...]] = {
@@ -637,6 +642,7 @@ SENSORS: dict[str, tuple[SensorEntityDescription, ...]] = {
             name="Temperature",
             icon="mdi:thermometer",
             state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.TEMPERATURE,
             native_unit_of_measurement=UnitOfTemperature.CELSIUS,
             translation_key="temperature",
         ),
@@ -673,6 +679,7 @@ SENSORS: dict[str, tuple[SensorEntityDescription, ...]] = {
             icon="mdi:thermometer",
             state_class=SensorStateClass.MEASUREMENT,
             native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+            device_class=SensorDeviceClass.TEMPERATURE,
             translation_key="temperature",
         ),
         HonSensorEntityDescription(
@@ -681,6 +688,76 @@ SENSORS: dict[str, tuple[SensorEntityDescription, ...]] = {
             icon="mdi:play",
             device_class=SensorDeviceClass.ENUM,
             translation_key="programs_wc",
+        ),
+    ),
+    "AP": (
+        HonSensorEntityDescription(
+            key="errors", name="Error", icon="mdi:math-log", translation_key="errors"
+        ),
+        HonSensorEntityDescription(
+            key="mainFilterStatus",
+            name="Main Filter Status",
+            native_unit_of_measurement=PERCENTAGE,
+        ),
+        HonSensorEntityDescription(
+            key="preFilterStatus",
+            name="Pre Filter Status",
+            native_unit_of_measurement=PERCENTAGE,
+        ),
+        HonSensorEntityDescription(
+            key="totalWorkTime",
+            name="Total Work Time",
+            native_unit_of_measurement=UnitOfTime.MINUTES,
+            device_class=SensorDeviceClass.DURATION,
+        ),
+        HonSensorEntityDescription(
+            key="coLevel",
+            name="CO Level",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.CO,
+            native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        ),
+        HonSensorEntityDescription(
+            key="pm10ValueIndoor",
+            name="pm10",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.PM10,
+            native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        ),
+        HonSensorEntityDescription(
+            key="pm2p5ValueIndoor",
+            name="pm2p5",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.PM25,
+            native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        ),
+        HonSensorEntityDescription(
+            key="vocValueIndoor",
+            name="VOC",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
+            native_unit_of_measurement=CONCENTRATION_PARTS_PER_BILLION,
+        ),
+        HonSensorEntityDescription(
+            key="humidityIndoor",
+            name="Humidity",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.HUMIDITY,
+            native_unit_of_measurement=PERCENTAGE,
+            translation_key="humidity",
+        ),
+        HonSensorEntityDescription(
+            key="temp",
+            name="Temperature",
+            state_class=SensorStateClass.MEASUREMENT,
+            device_class=SensorDeviceClass.TEMPERATURE,
+            native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+            translation_key="temperature",
+        ),
+        HonSensorEntityDescription(key="windSpeed", name="Wind Speed"),
+        HonSensorEntityDescription(
+            key="airQuality",
+            name="Air Quality",
         ),
     ),
 }
@@ -692,7 +769,7 @@ async def async_setup_entry(hass, entry: ConfigEntry, async_add_entities) -> Non
     for device in hass.data[DOMAIN][entry.unique_id].appliances:
         for description in SENSORS.get(device.appliance_type, []):
             if isinstance(description, HonSensorEntityDescription):
-                if not device.get(description.key):
+                if device.get(description.key) is None:
                     continue
                 entity = HonSensorEntity(hass, entry, device, description)
             elif isinstance(description, HonConfigSensorEntityDescription):
@@ -719,7 +796,7 @@ class HonSensorEntity(HonEntity, SensorEntity):
             ).values + ["No Program"]
         elif self.entity_description.option_list is not None:
             self._attr_options = list(self.entity_description.option_list.values())
-            value = self.entity_description.option_list.get(value, value)
+            value = get_readable(self.entity_description, value)
         if not value and self.entity_description.state_class is not None:
             self._attr_native_value = 0
         self._attr_native_value = value
@@ -744,7 +821,7 @@ class HonConfigSensorEntity(HonEntity, SensorEntity):
             value = value.value
         if self.entity_description.option_list is not None and not value == 0:
             self._attr_options = list(self.entity_description.option_list.values())
-            value = self.entity_description.option_list.get(value, value)
+            value = get_readable(self.entity_description, value)
         self._attr_native_value = value
         if update:
             self.async_write_ha_state()

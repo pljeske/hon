@@ -159,6 +159,12 @@ CLIMATE = {
             "state": "PROGRAMS.OV",
         }
     },
+    "air_conditioner": {
+        "preset_mode": {
+            "name": "OV.TABS.PROGRAMS_TITLE",
+            "state": "PROGRAMS.AC",
+        }
+    },
     "wine": {
         "preset_mode": {
             "name": "WC.NAME",
@@ -192,7 +198,7 @@ NAMES = {
         "self_clean": "PROGRAMS.AC.IOT_SELF_CLEAN",
         "self_clean_56": "PROGRAMS.AC.IOT_SELF_CLEAN_56",
         "silent_mode": "AC.PROGRAM_DETAIL.SILENT_MODE",
-        "mute_mode": "AC.PROGRAM_DETAIL.MUTE_MODE",
+        "night_mode": "AC.PROGRAM_CARD.NIGHT",
         "extra_rinse_1": "WASHING_CMD&CTRL.PROGRAM_CYCLE_DETAIL_OTHER_OPTIONS.EXTRARINSE1",
         "extra_rinse_2": "WASHING_CMD&CTRL.PROGRAM_CYCLE_DETAIL_OTHER_OPTIONS.EXTRARINSE2",
         "extra_rinse_3": "WASHING_CMD&CTRL.PROGRAM_CYCLE_DETAIL_OTHER_OPTIONS.EXTRARINSE3",

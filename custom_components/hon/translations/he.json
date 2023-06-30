@@ -831,6 +831,9 @@
             },
             "refrigerator": {
                 "name": "Refrigerator"
+            },
+            "night_mode": {
+                "name": "Night mode"
             }
         },
         "binary_sensor": {
@@ -964,7 +967,15 @@
         },
         "climate": {
             "air_conditioner": {
-                "name": "Air conditioner"
+                "name": "Air conditioner",
+                "state_attributes": {
+                    "preset_mode": {
+                        "name": "Programs",
+                        "state": {
+                            "iot_simple_start": "התחל עכשיו"
+                        }
+                    }
+                }
             },
             "fridge": {
                 "name": "Fridge",
